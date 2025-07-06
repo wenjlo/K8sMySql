@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  labels:
+    app: mysql
+spec:
+  selector:
+    app: mysql # 需與 Deployment 的 labels 相符
+  ports:
+    - protocol: TCP
+      port: 3306      # 服務在 Cluster IP 上監聽的端口
+      targetPort: 3306 # Pod 內部 MySQL 監聽的端口
+      nodePort: 30306 # 可選：指定一個 NodePort，範圍通常在 30000-32767
+  type: NodePort      # 關鍵：使用 NodePort 類型以便從外部訪問

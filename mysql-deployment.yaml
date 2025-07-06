@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql-deployment
+  labels:
+    app: mysql
+spec:
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+        - name: mysql
+          image: mysql:8.0 # 你可以使用其他版本，例如 mysql:5.7
+          env:
+            - name: MYSQL_ROOT_PASSWORD
+              value: "1234" # **重要：請將此替換為你的密碼**
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-persistent-storage
+              mountPath: /var/lib/mysql
+          resources: # <--- ADD THIS SECTION
+            requests:
+              memory: "512Mi" # Request 512 Megabytes of memory
+              cpu: "500m"     # Request 0.5 CPU cores (500 milliCPU)
+            limits:
+              memory: "1Gi"   # Limit to 1 Gigabyte of memory
+              cpu: "1"        # Limit to 1 CPU core
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
